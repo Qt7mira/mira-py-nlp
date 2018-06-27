@@ -3,7 +3,7 @@ import math
 
 class BM25(object):
 
-    def __init__(self, doc):
+    def __init__(self, doc, mode):
         self.D = 1
         self.avg_dl = 0
 
@@ -21,6 +21,9 @@ class BM25(object):
             self.avg_dl += len(sentence)
 
         self.avg_dl /= self.D
+
+        # mode值有两个：1，2。模式1为原始bm25算法。模式2为bm25进行了简单的公式调整。
+        self.mode = mode
 
         index = 0
 
@@ -60,8 +63,11 @@ class BM25(object):
             else:
                 wf = 0
             score += self.idf[word] * wf * (self.k1 + 1) / (wf + self.k1 * (1 - self.b + self.b * d / self.avg_dl))
-        # return score / (len(sentence) + len(self.doc))
-        return score
+
+        if self.mode == 1:
+            return score
+        elif self.mode == 2:
+            return score / (len(sentence) + len(self.doc))
 
     def sim_all(self, sentence):
         scores = {}

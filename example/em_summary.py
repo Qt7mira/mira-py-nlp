@@ -13,5 +13,5 @@ doc_content = np.array(data['文章']).tolist()
 
 for i in doc_content[7:8]:
     print(i)
-    trh = TextRankSentences(tp.generate_docs(i))
+    trh = TextRankSentences(tp.generate_docs(i), mode=2)
     print(trh.get_top_n())

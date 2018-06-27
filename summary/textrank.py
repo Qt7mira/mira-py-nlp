@@ -7,7 +7,7 @@ import re
 
 class TextRankSentences(object):
 
-    def __init__(self, doc):
+    def __init__(self, doc, mode=1):
 
         # 阻尼系数
         self.d = 0.85
@@ -24,7 +24,18 @@ class TextRankSentences(object):
         self.weight_sum = {}
         self.vertex = {}
 
-        self.bm = BM25(doc)
+        # mode值有两个：1，2。模式1为原始bm25算法。模式2为bm25进行了简单的公式调整。
+        if mode != 1 and mode != 2:
+            raise ValueError("mode must be 1 or 2")
+        else:
+            self.mode = mode
+
+        if mode == 1:
+            self.threshold = 10
+        elif mode == 2:
+            self.threshold = 0.25
+
+        self.bm = BM25(doc, mode)
         self.doc = doc
 
         cnt = 0
@@ -57,8 +68,10 @@ class TextRankSentences(object):
                 break
 
         for i in range(self.D):
-            # self.top[self.vertex[i]] = i
             self.top[i] = self.vertex[i]
+
+    def set_threshold(self, threshold):
+        self.threshold = threshold
 
     def get_top_n(self, size=5):
 
@@ -74,10 +87,10 @@ class TextRankSentences(object):
                 # print(i, j, self.doc[i], self.doc[j])
                 value = self.bm.sim(self.doc[i], j)
                 # print(value)
-                if value > 10:
+                if value > self.threshold:
                     break
             # print("-----------------------")
-            if value <= 10 and i not in result:
+            if value <= self.threshold and i not in result:
                 result.append(i)
 
             if len(result) >= size:
