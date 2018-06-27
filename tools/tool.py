@@ -1,6 +1,15 @@
 from math import log as math_log
 import re
 from itertools import chain
+from sys import version_info
+import os
+
+is_python2 = (version_info.major == 2)
+
+if not is_python2:
+    basestring = str
+
+run_path = os.path.split(os.path.realpath(__file__))[0]
 
 
 def log(x):
@@ -30,7 +39,7 @@ class Trie:
                         self.__setitem__(l[0].decode('utf-8'), int(l[1]))
                     else:
                         self.__setitem__(l[0], int(l[1]))
-        elif path_or_trie != None:
+        elif path_or_trie is not None:
             self.update(path_or_trie)
 
     def __setitem__(self, item, count):
@@ -74,7 +83,7 @@ class Trie:
             del _[self.end]
 
     def __iter__(self, _=None):  # 以(词, 词频)的形式逐一返回所有记录
-        if _ == None:
+        if _ is None:
             _ = self.dic
 
         for c in _:
