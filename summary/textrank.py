@@ -1,8 +1,6 @@
 from summary.bm25 import BM25
 import collections
 import jieba
-import pandas as pd
-import numpy as np
 import jieba
 import re
 
@@ -100,13 +98,18 @@ class TextParser(object):
         self.stop_words.append('\n')
         self.stop_words.append('\t')
 
-    def cut_sentence(self, sentence):
-        delimiters = frozenset(u'。！？； >【】')
+        self.delimiter = frozenset(u'。！？； >【】')
         # delimiters = frozenset(u'。！？；>【】')
+
+    def set_delimiter(self, delimiter):
+        self.delimiter = frozenset(delimiter)
+
+    def cut_sentence(self, sentence):
+
         buf = []
         for ch in sentence:
             buf.append(ch)
-            if delimiters.__contains__(ch):
+            if self.delimiter.__contains__(ch):
                 yield ''.join(buf)
                 buf = []
         if buf:
@@ -116,22 +119,3 @@ class TextParser(object):
         docs = self.cut_sentence(doc)
         docs = [jieba.lcut(i) for i in docs]
         return docs
-
-
-# tp = TextParser()
-#
-# data = pd.read_excel("../../text_abstract/data/舆情监控项目第二轮测试用例v1.0.xlsx", sheet_name="功能3 事件聚合 结果")
-# doc_id = np.array(data['文章编号']).tolist()
-# doc_content = np.array(data['文章']).tolist()
-#
-#
-# for i in doc_content[7:8]:
-#     print(i)
-#     trh = TextRankSentences(tp.generate_docs(i))
-#     print(trh.get_top_n(5))
-#     print("--------------------------------")
-
-# doc_str = " #内搜#。跟进内网百科开发。query分析交互设计及沟通。接入平台化需求沟通、梳理。爬虫需求沟通、梳理。内网百科，数据源沟通，与HR、河图。内网百科，个人中心页面，交互设计。内网百科，运营活动预约及沟通。纠错效果review。 #ESS-PM#。spin off跟进。各产品线下半年计划收集。周报需求讨论。"
-# trh = TextRankSentences(generate_docs(doc_str))
-# print(trh.get_top_n(5))
-

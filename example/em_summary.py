@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 tp = TextParser()
+tp.set_delimiter("。！？> 【】")
 
 data = pd.read_excel("../data/news_data.xlsx", sheet_name="Sheet3")
 doc_id = np.array(data['文章编号']).tolist()
